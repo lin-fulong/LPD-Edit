@@ -1,55 +1,36 @@
-<h1 align="center">LPD-Edit</h1>
+<div align="center">
+  <h1>LPD-Edit</h1>
+  <p><strong>Latent Principal Denoising for Robust Lifelong Knowledge Editing</strong></p>
+  <p align="center">
+    <a href="#">📄 Paper</a> •
+    <a href="https://github.com/lin-fulong/LPD-Edit">🚀 GitHub</a>
+  </p>
+</div>
 
-<p align="center">
-  <strong>PCA-Enhanced Lifelong Model Editing</strong>
-</p>
+LPD-Edit is a robust lifelong knowledge editing method designed for long-horizon sequential editing.  
+It improves editing stability by introducing latent principal denoising and anchored weighted fusion prior to parameter-shift estimation.
 
-<p align="center">
-  <a href="#">📄 Paper</a> •
-  <a href="#">🤗 Dataset</a> •
-  <a href="https://arxiv.org/abs/2505.14679">UltraEdit</a>
-</p>
-
-<p align="center">
-  <em>Official research code for LPD-Edit, a PCA-enhanced lifelong model editing method built on top of UltraEdit.</em>
-</p>
-
-LPD-Edit is a lifelong model editing method built on top of the UltraEdit framework.  
-It improves sequential editing stability by introducing PCA-based denoising and representation fusion before parameter-shift estimation.
-
-> Key idea: denoise hidden-state editing signals in a low-rank principal subspace to obtain more stable and reusable parameter updates during long-horizon sequential editing.
+> Key idea: denoise hidden-state editing signals in a principal semantic subspace and fuse them with the original representations to obtain stable yet plastic parameter updates.
 
 ## Overview
 
-Long-horizon sequential editing can accumulate noise and spurious directions in cached hidden-state representations. These noisy editing signals may degrade the quality of parameter-shift estimation and lead to unstable behavior as the number of edits grows.
+Lifelong knowledge editing aims to continuously update factual knowledge in large language models without full retraining. In long-horizon sequential editing, cached hidden-state representations may accumulate semantic noise and spurious directions, which can degrade parameter-shift estimation and destabilize later edits.
 
-LPD-Edit addresses this issue by projecting editing representations into a principal subspace and fusing the denoised signal with the original hidden states. This design aims to preserve dominant semantic directions while suppressing noisy variation, without changing the overall editing pipeline inherited from UltraEdit.
+LPD-Edit addresses this issue through two coupled components. First, a PCA-based denoising module projects hidden states into a principal subspace to preserve dominant semantic directions while suppressing noisy variation. Second, an anchored weighted fusion module combines denoised features with the original hidden states to balance model plasticity and stability and reduce deviation from the pre-training distribution.
 
-LPD-Edit is implemented in a unified experimental framework with support for multiple datasets, model backbones, and editor configurations.
+The method is implemented in a unified experimental framework with support for multiple datasets, model backbones, and editor configurations.
 
-## Highlights
+## Data & Model Preparation
 
-- PCA-enhanced sequential model editing within the UltraEdit parameter-shift framework
-- Denoising of cached hidden-state representations before parameter-shift prediction
-- Representation fusion that balances stability and information preservation
-- Plug-and-play integration into the existing UltraEdit-style editing pipeline
-- Unified Hydra-based configuration for datasets, models, and editor settings
+We use publicly available datasets and model resources in our experiments.
 
-## Method
+1️⃣ Download the files from [Google Drive](https://drive.google.com/drive/folders/1wsxG5Ybf6hT9QUlccvzTuJSfL_TFNyKQ?usp=sharing) and place them under `data/raw`.
 
-LPD-Edit follows the parameter-shift prediction framework of UltraEdit. Given cached hidden-state representations collected during editing, it first performs PCA-based subspace projection to suppress noisy directions. The denoised representations are then fused with the original hidden states:
+2️⃣ Download the [UltraEditBench](https://huggingface.co/datasets/XiaojieGu/UltraEditBench) and save it under `data/raw/ultraeditbench`.
 
-```text
-H' = (1 - alpha) * H + alpha * H_k
-```
+3️⃣ Specify the path to model weights by setting the `name_or_path` field in the selected file under `config/model/`.
 
-where `H` is the original hidden-state representation, `H_k` is the PCA reconstruction from the selected principal components, and `alpha` controls the denoising strength.
-
-The fused representation `H'` is then used in the downstream parameter-shift computation. This design improves the quality and stability of editing features while preserving the efficiency and overall workflow of the original UltraEdit pipeline.
-
-## Results Snapshot
-
-LPD-Edit is designed for long-horizon sequential editing, where stability becomes increasingly important as the number of edits grows. We recommend evaluating it jointly with edit success, preservation, and long-horizon stability metrics.
+If you need to use locate-then-edit methods, publicly available precomputed covariance matrices for several models can be found on Hugging Face: [GPT-J 6B](https://huggingface.co/XiaojieGu/gpt-j-6b_CovarianceMatrix), [Qwen2.5-7B-Instruct](https://huggingface.co/XiaojieGu/Qwen2.5-7B-Instruct_CovarianceMatrix), [Mistral-7B-v0.3](https://huggingface.co/XiaojieGu/Mistral-7B-v0.3_CovarianceMatrix), [LLaMA-3-8B-Instruct](https://huggingface.co/XiaojieGu/Llama-3-8B-Instruct_CovarianceMatrix), and [LLaMA-2-7B-hf](https://huggingface.co/XiaojieGu/Llama-2-7b-hf_CovarianceMatrix). 
 
 ## Quick Start
 
@@ -91,69 +72,9 @@ This command is intended as a sanity check rather than a final experiment. It he
 - cache files can be written to disk
 - the PCA denoising module is connected correctly
 
-## Repository Structure
-
-```text
-LPD-Edit/
-├── config/                   # Hydra configuration files
-├── data/                     # Dataset loaders and raw data
-├── editor/                   # Editing algorithms and PCA denoising utilities
-├── main.py                   # Experiment entry point
-├── model.py                  # Model loading logic
-├── util.py                   # Shared utility functions
-├── run.sh                    # Example command for running experiments
-└── README.md
-```
-
-### Key Files
-
-- `editor/lpdedit.py`: main implementation of LPD-Edit
-- `editor/pca_denoise/project.py`: PCA-based denoising and reconstruction
-- `editor/pca_denoise/select_k.py`: principal component selection
-- `config/editor/lpdedit.yaml`: default LPD-Edit hyperparameters
-- `main.py`: experiment entry point
-
-Compared with UltraEdit, the main modification is introduced in `predict_param_shifts`, where PCA-based denoising and representation fusion are applied before downstream parameter-shift estimation.
-
-## Data Preparation
-
-Place dataset files under `data/raw/` according to the paths specified in `config/dataset/`.
-
-Supported datasets include:
-
-- `zsre`
-- `fever`
-- `wikibigedit`
-- `ultraeditbench`
-
-Example raw data directories:
-
-- `data/raw/zsre/`
-- `data/raw/fever/`
-- `data/raw/wikibigedit/`
-- `data/raw/ultraeditbench/`
-
-Make sure the local directory structure matches the corresponding dataset configuration files.
-
-## Model Preparation
-
-Set the local checkpoint path through the `name_or_path` field in the selected file under `config/model/`, such as:
-
-- `config/model/llama-3-instruct.yaml`
-- `config/model/mistral-7b.yaml`
-- `config/model/qwen2.5-7b.yaml`
-
-If you use locate-then-edit style methods in the broader experimental framework, precomputed covariance matrices may also be needed for some model backbones. In that case, prepare the corresponding covariance files separately and place them in the expected local path before running experiments.
-
-## Data & Model Preparation
-
-1. Download the files from Google Drive and place them under `data/raw/`.
-2. Download `UltraEditBench` and place it under `data/raw/ultraeditbench/`.
-3. Specify the path to model weights by setting the `name_or_path` field in the selected file under `config/model/`.
-
-If you need to use locate-then-edit methods, precomputed covariance matrices may be required for several model backbones, including GPT-J 6B, Qwen2.5-7B-Instruct, Mistral-7B-v0.3, LLaMA-3-8B-Instruct, and LLaMA-2-7B-hf.
-
 ## Running Experiments
+
+We follow standard experimental setups from prior work to ensure fair comparison and reproducibility.
 
 The project uses Hydra for experiment configuration management. The default entry point is:
 
@@ -184,64 +105,12 @@ sh run.sh
 
 The default LPD-Edit configuration is defined in `config/editor/lpdedit.yaml`. Key hyperparameters include:
 
-- `lr`: scaling factor used in parameter-shift estimation
-- `batch_size`: internal batch size used by the editor
-- `cache_dir`: directory for storing cached keys and value gradients
-- `alpha`: interpolation factor between original and PCA-denoised hidden states
+- `batch_size`: number of edit samples processed in parallel during each editing step
+- `n_edits`: number of edit requests applied per step in sequential editing
+- `num_seq`: total number of sequential editing steps (i.e., length of the editing horizon)
 - `pca_denoise.enable_pca`: whether PCA denoising is enabled
 - `pca_denoise.var_threshold`: cumulative explained-variance threshold for selecting principal components
-- `pca_denoise.min_k`: minimum number of retained principal components
-- `pca_denoise.eps`: numerical stability term
-
-## Supported Editors
-
-The repository currently contains multiple editor implementations, including:
-
-- `UltraEdit`
-- `LPD-Edit`
-- `RLEdit`
-- `MEND`
-- `MALMEN`
-
-LPD-Edit is the main method introduced in this repository.
-
-## Logging
-
-The current implementation initializes experiment logging with `wandb` in `main.py`. By default, the run is organized as:
-
-- `project = {dataset.name}_{model.name}`
-- `name = {editor.name}_{dataset.n_edits}`
-
-Users who do not wish to use Weights & Biases may modify or disable the corresponding initialization logic in `main.py`.
-
-## Reproducibility
-
-For reproducible results, please report the following:
-
-- model backbone and exact checkpoint version
-- dataset and split configuration
-- editing layers specified in `model.edit_modules`
-- PCA hyperparameters such as `alpha`, `var_threshold`, and `min_k`
-- number of sequential edits such as `num_seq` and `dataset.n_edits`
-- random seed
-- PyTorch version
-- CUDA version
-- GPU type and memory
-
-Logs and caches are organized according to the configured `cache_dir` and logging backend.
-
-## Notes and Limitations
-
-- LPD-Edit is currently implemented within an UltraEdit-style parameter-shift framework
-- performance and memory usage depend on the chosen backbone, edited layers, and cache size
-- PCA denoising may require tuning of `alpha` and `var_threshold` across different models and datasets
-- some shared editor utilities are inherited from a common codebase, so extending the framework to new editors may require additional adaptation
-
-## Relationship to UltraEdit
-
-This repository is not a direct mirror of the original UltraEdit project. Instead, it is an extended research codebase built on top of the UltraEdit editing framework. The main contribution of this repository is the implementation of LPD-Edit, which augments the original pipeline with PCA-based denoising and representation fusion during parameter-shift prediction.
-
-Accordingly, this repository should be understood as a research implementation of **LPD-Edit based on UltraEdit**, rather than as the original UltraEdit release.
+- `alpha`: interpolation factor between original and PCA-denoised hidden states
 
 ## Acknowledgements
 
@@ -249,13 +118,12 @@ This work is built on top of the UltraEdit framework and also benefits from prio
 
 ## Citation
 
-If you find this repository useful in your research, please cite the corresponding LPD-Edit paper. If your manuscript is still in preparation, you may temporarily use a placeholder entry such as:
+If you find this work helpful, please consider citing:
 
 ```bibtex
-@misc{lpdedit2026,
-  title={LPD-Edit: PCA-Enhanced Lifelong Model Editing},
-  author={Author1 and Author2 and Author3},
+@misc{liulin2026lpdedit,
+  title={LPD-Edit: Latent Principal Denoising for Robust Lifelong Knowledge Editing},
+  author={Ruinan Liu and Fulong Lin},
   year={2026},
-  note={Manuscript in preparation}
+  note={Under review}
 }
-```
