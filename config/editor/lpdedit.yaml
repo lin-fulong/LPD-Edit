@@ -1,0 +1,16 @@
+name: lpdedit
+lr: 1e-6
+batch_size: 128
+token: ans
+cache_dir: cache
+save_checkpoint: False
+load_checkpoint: False
+# n_test: 10
+
+pca_denoise:
+  enable_pca: true
+  min_k: 1
+  eps: 1e-8
+  var_threshold: 0.9
+  
+alpha: 0.2
