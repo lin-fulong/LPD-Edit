@@ -2,7 +2,7 @@
   <h1>LPD-Edit</h1>
   <p><strong>Latent Principal Denoising for Robust Lifelong Knowledge Editing</strong></p>
   <p align="center">
-    <a href="#">📄 Paper</a> •
+    <!-- <a href="#">📄 Paper</a> • -->
     <a href="https://github.com/lin-fulong/LPD-Edit">🚀 GitHub</a>
   </p>
 </div>
