@@ -30,7 +30,7 @@ We use publicly available datasets and model resources in our experiments.
 
 3️⃣ Specify the path to model weights by setting the `name_or_path` field in the selected file under `config/model/`.
 
-If you need to use locate-then-edit methods, publicly available precomputed covariance matrices for several models can be found on Hugging Face: [GPT-J 6B](https://huggingface.co/XiaojieGu/gpt-j-6b_CovarianceMatrix), [Qwen2.5-7B-Instruct](https://huggingface.co/XiaojieGu/Qwen2.5-7B-Instruct_CovarianceMatrix), [Mistral-7B-v0.3](https://huggingface.co/XiaojieGu/Mistral-7B-v0.3_CovarianceMatrix), [LLaMA-3-8B-Instruct](https://huggingface.co/XiaojieGu/Llama-3-8B-Instruct_CovarianceMatrix), and [LLaMA-2-7B-hf](https://huggingface.co/XiaojieGu/Llama-2-7b-hf_CovarianceMatrix). 
+If you need to use locate-then-edit methods, publicly available precomputed covariance matrices for several models can be found on Hugging Face: [GPT-J 6B](https://huggingface.co/XiaojieGu/gpt-j-6b_CovarianceMatrix), [Qwen2.5-7B-Instruct](https://huggingface.co/XiaojieGu/Qwen2.5-7B-Instruct_CovarianceMatrix), [Mistral-7B-v0.3](https://huggingface.co/XiaojieGu/Mistral-7B-v0.3_CovarianceMatrix), [LLaMA-3-8B-Instruct](https://huggingface.co/XiaojieGu/Llama-3-8B-Instruct_CovarianceMatrix). 
 
 ## Quick Start
 
@@ -116,7 +116,7 @@ The default LPD-Edit configuration is defined in `config/editor/lpdedit.yaml`. K
 
 This work is built on top of the UltraEdit framework and also benefits from prior open-source research efforts on model editing. We sincerely acknowledge the contributions of the corresponding authors and maintainers to the model editing community.
 
-## Citation
+<!-- ## Citation
 
 If you find this work helpful, please consider citing:
 
@@ -126,4 +126,4 @@ If you find this work helpful, please consider citing:
   author={Ruinan Liu and Fulong Lin},
   year={2026},
   note={Under review}
-}
+} -->
